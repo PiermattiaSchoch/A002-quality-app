@@ -1,0 +1,21 @@
+/* Change header font */
+.main-header .logo {
+  font-family: "Gill Sans", sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* Change sidebar font */
+.main-sidebar.shiny-bound-input  {
+  font-family: "Gill Sans", sans-serif;
+  font-size: 15px;
+}
+
+/* Edit the below for the header title hyperlink */
+.skin-blue .main-header .logo>a {
+            color: white; /* color of the hyperlink text */
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+        }
+
