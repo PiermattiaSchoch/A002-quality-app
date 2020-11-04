@@ -6,6 +6,7 @@ cat("Loading libraries...")
 # Functionalities
 library(here)
 library(styler)
+library(devtools)
 
 # Data manipulation 
 library(dplyr)

@@ -25,7 +25,9 @@ ui <- dashboardPage(
   sidebar = dashboardSidebar(
 
       sidebarMenu(
+
       menuItem("Home", tabName = "home", icon = icon("info-circle")),
+      menuItem("Load File", tabName = "load_file", icon = icon("upload")),
       menuItem("Dataset Glimpse", tabName = "dataset_glimpse", icon = icon("search")),
       menuItem("Multivariate Analysis", tabName = "multivariate_analysis", icon = icon("database"),
                menuSubItem(
@@ -66,15 +68,142 @@ ui <- dashboardPage(
     
     # Define UI for each table
     tabItems(
-      
-      ## ** home ----
+            
+      ## ** load file ----
       tabItem(
-          tabName = "home",
-      ),
+        tabName = "home",
+        
+          fluidRow(
+              
+              column(5, style='padding-left:50px; padding-right:0px; padding-top:120px; padding-bottom:50px',
+                     
+                    offset = 0,
+                    tags$div(img(src = "importance-quality.png", width="800", height="800"), style="text-align: center;")
+              ),
+            
+              column(5, style='padding-left:50px; padding-right:0px; padding-top:120px; padding-bottom:50px',
+                    offset = 1,
+                    tags$div(img(src = "six-dimensions.png", width="800", height="800"), style="text-align: center;")
+              )
+            
+          )
+        ),
+
       
+      
+      ## ** load file ----
+      tabItem(
+          tabName = "load_file",
+      
+      fluidRow(
+        column(7,
+               
+          box(
+             title = span(icon("caret-right"), "Please upload a file"),     
+             status = "info",
+             solidHeader = F, 
+             width = 12,
+            
+            # checkbox if file has header 
+            fileInput("file1", "Choose CSV File",
+                      multiple = F,
+                      accept = c("text/csv",
+                                 "text/comma-separated-values,text/plain",
+                                 ".csv")),
+      
+            # horizontal line
+            tags$hr(),
+      
+            # input: checkbox if file has header 
+            checkboxInput("header", "Header", TRUE),
+      
+            # input: select separator 
+            radioButtons("sep", "Separator",
+                         choices = c(Comma = ",",
+                                     Semicolon = ";",
+                                     Tab = "\t"),
+                         selected = ","),
+      
+            # input: select quotes
+            radioButtons("quote", "Quote",
+                         choices = c(None = "",
+                                     "Double Quote" = '"',
+                                     "Single Quote" = "'"),
+                         selected = '"'),
+      
+            # horizontal line 
+            tags$hr(),
+      
+            # Input: Select number of rows to display
+            radioButtons("disp", "Display",
+                         choices = c(Head = "head",
+                                     All = "all"),
+                         selected = "head")
+            
+            )
+          ),
+        
+        column(5,
+          box(
+           title = span(icon("caret-right"), "Show dataset"),     
+           status = "info",
+           solidHeader = F, 
+           width = 12,
+           tableOutput("contents")
+          )
+        )
+      )
+    ),
+    
+
+
       ## ** dataset glimpse ----
       tabItem(
           tabName = "dataset_glimpse",
+          
+          fluidRow(
+            column(3, 
+                   
+                  box(
+                    title = span(icon("caret-right"), "Basic Description"),
+                    status = "info",
+                    solidHeader = F,
+                    width = 12,
+                    withSpinner(plotOutput("basic_description", height = 450), type=7)
+                  ),
+                  
+                  box(
+                    title = span(icon("caret-right"), "Funded Amount by Time"),
+                    status = "info",
+                    solidHeader = F,
+                    width = 12,
+                    withSpinner(plotOutput("check_types", height = 450), type=7)
+                  )
+            ),
+
+            column(3,
+                  
+                  box(
+                    title = span(icon("caret-right"), "Percentange of missing values"),
+                    status = "info",
+                    solidHeader = F,
+                    width = 12,
+                    withSpinner(plotOutput("missing_values", height = 983), type=7)
+                  )
+            ),
+            
+            column(6,
+                   
+                  box(
+                    title = span(icon("caret-right"), "Funded Amount by Time"),
+                    status = "info",
+                    solidHeader = F,
+                    width = 12,
+                    withSpinner(uiOutput("data_summary", height = 983), type=7)
+                  )
+            ),
+
+          ))
       ),
        
       ## ** multivariate_analysis ----
@@ -116,4 +245,3 @@ ui <- dashboardPage(
     )
 
   )
-)
