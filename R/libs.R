@@ -23,6 +23,9 @@ library(dashboardthemes)
 library(shinydashboardPlus)
 library(shinycssloaders)
 library(shinyWidgets)
+library(shinyjs)
+library(reactable)
+
 
 library(htmltools)
 

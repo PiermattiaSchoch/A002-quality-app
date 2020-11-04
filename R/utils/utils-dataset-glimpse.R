@@ -6,10 +6,6 @@ library(DataExplorer)
 library(visdat)
 library(summarytools)
 
-## basic description ----
-#basic_description = df_str(dataset, return = "plot", quiet = F) + labs(title="")
-#basic_description = basic_description + labs(title="")
-
 ## missing values ----
 plot_missing_mycolor = function (data, 
                                  group = list(Good = 0.05, Okay = 0.4, Poor = 0.8, Scarce =  1), 
@@ -43,20 +39,4 @@ plot_missing_mycolor = function (data,
         plotDataExplorer(plot_obj = output, title = title, ggtheme = ggtheme, theme_config = theme_config)
         }
 
-# object
-# missing_values = plot_missing_mycolor(dataset,
-#                                       ggtheme=theme_tq(),
-#                                       title="",
-#                                       theme_config = list(legend.position = 'none')) +
-#                                       labs(x="",y="")
-
-## check types ----
-
-# check_types = vis_dat(dataset)
-# check_types = check_types + 
-#                 coord_flip() + 
-#                 labs(y="\n Observations \n") +
-#                 scale_y_discrete(position = 'right', limits = c(0, nrow(dataset)))+
-#                 scale_x_discrete(position = 'bottom')+
-#                 theme(legend.position="bottom")
 

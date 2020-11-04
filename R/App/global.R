@@ -1,10 +1,11 @@
 source(here::here("R", "libs.R"))
 
 # Load dataset
-#dataset = readRDS(here::here("data","dataset.rds"))
+#dataset2 = readRDS(here::here("data","dataset.rds"))
 
 # Import utils
 source(here::here("R","utils","utils-dataset-glimpse.R"))
+source(here::here("R","utils","utils-numerical-distributions.R"))
 
 # Import ui and server
 source(here::here("R", "App", "ui.R"))
@@ -15,3 +16,4 @@ shinyApp(
   ui = ui,
   server = server
 )
+
