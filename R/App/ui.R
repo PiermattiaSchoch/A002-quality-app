@@ -230,16 +230,16 @@ ui <- dashboardPage(
           tabName = "numerical_distributions",
 
             
-          #   fluidRow(
-          #     
-          #   tabBox(
-          #    id = "tabset1",
-          #    width = 10,
-          #    tabPanel("Histograms",withSpinner(plotOutput("numerical_histograms", height = 983), type=7)),
-          #    tabPanel("Densities",withSpinner(plotOutput("densities", height = 983), type=7)),
-          #    tabPanel("QQ-plots",withSpinner(plotOutput("qq-plots", height = 983), type=7))
-          #   )
-          # )
+            fluidRow(
+
+            tabBox(
+             id = "tabset1",
+             width = 10,
+             tabPanel("Histograms",withSpinner(plotOutput("numerical_histograms", height = 983), type=7)),
+             tabPanel("Densities",withSpinner(plotOutput("densities", height = 983), type=7)),
+             tabPanel("QQ-plots",withSpinner(plotOutput("qq-plots", height = 983), type=7))
+            )
+          )
 
       ),
       
@@ -293,17 +293,70 @@ ui <- dashboardPage(
       ## ** univariate_analysis ----  
       tabItem(
           tabName = "univariate_analysis",
+         
+          fluidRow(
+            column(2, 
+                   
+            box(
+              title = "",
+              status = "info",
+              solidHeader = F,
+              width = 12,
+              selectInput("univariate", span(icon("caret-right"), "Pick a variable"), ""),
+            )
+            ),
+            column(5,
+                   
+            box(
+              title = "",
+              status = "info",
+              solidHeader = F,
+              width = 12,
+              withSpinner(highchartOutput("hists", height = 400), type=7)
+            )
+            ),
+            
+            column(5,
+                   
+            box(
+              title = "",
+              status = "info",
+              solidHeader = F,
+              width = 12,
+              withSpinner(highchartOutput("dens", height = 400), type=7)
+            )
+            )
+            
           
-          
-      ),
-       
+            )
+          ), 
+
+  
       ## ** quality_checker ----
       tabItem(
           tabName = "quality_checker",
+          
+          
+          fluidRow(
+              
+              column(5, style='padding-left:50px; padding-right:0px; padding-top:120px; padding-bottom:50px',
+                     
+                    offset = 0,
+                    
+                    actionButton(inputId = "email1",
+                    icon = icon("envelope", lib = "font-awesome"),
+                    a("Contact Admin", href="mailto:piermattia.schoch@riskwave.net")),
+                    
+                    hr(),
+                    tags$div(img(src = "data-valid.png", width="700", height="700"), style="text-align: center;")
+              )
+              
+          
       )
         
       
     )
 
   )
+)
 )

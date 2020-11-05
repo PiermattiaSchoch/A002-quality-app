@@ -37,9 +37,19 @@ server <- function(input, output, session) {
     else {
       return(dataset())
     }
-
+    
   })
   
+  observe({
+    inFile<-input$file1
+    print(inFile)
+    if(is.null(inFile))
+      return(NULL)
+    dt = read.csv(inFile$datapath, header=input$header, sep=input$sep)
+    ## Decide later what to do with the data, here we just fill
+    updateSelectInput(session, "univariate", choices = names(dt))
+  })
+
   
   output$Dataframe <- renderValueBox({
     valueBox(
@@ -154,5 +164,49 @@ server <- function(input, output, session) {
     grid.arrange(grobs=list)
 
   })
+  
+  ## ** univariate analysis ----
+  
+  dataset_univariate = reactive({
+    
+    req(input$file1)
+
+    df <- read.csv(input$file1$datapath,
+             header = input$header,
+             sep = input$sep,
+             quote = input$quote)
+    
+    df =  df[, input$univariate]
+    
+    return(df)
+    
+    
+  })
+    
+  
+  output$hists = renderHighchart({
+    
+  if(is.numeric(dataset_univariate())){
+   
+    hc <- hchart(
+          dataset_univariate(), 
+          color = "#B71C1C", name = input$univariate
+  )
+    
+  }
+  })  
+  
+  output$dens = renderHighchart({
+    
+  if(is.numeric(dataset_univariate())){
+   
+    hc <- hchart(
+          density(dataset_univariate()), 
+          color = "#B71C1C", name = input$univariate
+  )
+    
+  }
+  })  
+    
   
 }
