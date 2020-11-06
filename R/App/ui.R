@@ -28,16 +28,29 @@ ui <- dashboardPage(
 
       menuItem("Intro", tabName = "introduction", icon = icon("info-circle")),
       menuItem("Load File", tabName = "load_file", icon = icon("upload")),
-      menuItem("Dataset Glimpse", tabName = "dataset_glimpse", icon = icon("search")),
+      #menuItem("Dataset Glimpse", tabName = "dataset_glimpse", icon = icon("search")),
       menuItem("Multivariate Analysis", tabName = "multivariate_analysis", icon = icon("database"),startExpanded = TRUE,
+               
                menuSubItem(
-                  text = "Numerical distributions",
-                  tabName = "numerical_distributions",
+                  text = "Data Summary",
+                  tabName = "data-summary",
+                  icon = icon("angle-right")
+                ),
+               
+                menuSubItem(
+                  text = "Missing Values",
+                  tabName = "missing-values",
+                  icon = icon("angle-right")
+                ),
+               
+               menuSubItem(
+                  text = "Numerical analysis",
+                  tabName = "numerical_analysis",
                   icon = icon("angle-right")
                 ),
                 menuSubItem(
-                  text = "Categorical distributions",
-                  tabName = "categorical_distributions",
+                  text = "Categorical analysis",
+                  tabName = "categorical_analysis",
                   icon = icon("angle-right")
                 ),
                 menuSubItem(
@@ -128,7 +141,7 @@ ui <- dashboardPage(
                            choices = c(Comma = ",",
                                        Semicolon = ";",
                                        Tab = "\t"),
-                           selected = ","),
+                           selected = ";"),
         
               # input: select quotes
               radioButtons("quote", "Quote",
@@ -142,8 +155,7 @@ ui <- dashboardPage(
         
               # Input: Select number of rows to display
               radioButtons("disp", "Display",
-                           choices = c(Head = "head",
-                                       All = "all"),
+                           choices = c(Head = "head"),
                            selected = "head")
               
               ),
@@ -167,7 +179,24 @@ ui <- dashboardPage(
 
               valueBoxOutput("Variables"),
         
-              valueBoxOutput("Observations")
+              valueBoxOutput("Observations"),
+              
+              box(
+                    title = span(icon("caret-right"), "Basic Description"),
+                    status = "info",
+                    solidHeader = F,
+                    width = 12,
+                    withSpinner(plotOutput("basic_description", height = 390), type=7)
+                  ),
+              
+              box(
+                title = span(icon("caret-right"), "Data Types"),
+                status = "info",
+                solidHeader = F,
+                width = 12,
+                withSpinner(plotOutput("check_types", height = 345), type=7)
+              )
+              
                
               )
       )
@@ -177,31 +206,81 @@ ui <- dashboardPage(
 
 
       ## ** dataset glimpse ----
+      # tabItem(
+      #     tabName = "dataset_glimpse",
+      #     
+      #     fluidRow(
+      #       column(3, 
+                   
+                  # box(
+                  #   title = span(icon("caret-right"), "Basic Description"),
+                  #   status = "info",
+                  #   solidHeader = F,
+                  #   width = 12,
+                  #   withSpinner(plotOutput("basic_description", height = 450), type=7)
+                  # ),
+                  
+                  # box(
+                  #   title = span(icon("caret-right"), "Data Types"),
+                  #   status = "info",
+                  #   solidHeader = F,
+                  #   width = 12,
+                  #   withSpinner(plotOutput("check_types", height = 450), type=7)
+                  # )
+      #      ),
+
+      #       column(3,
+      #             
+      #             box(
+      #               title = span(icon("caret-right"), "Percentange of missing values"),
+      #               status = "info",
+      #               solidHeader = F,
+      #               width = 12,
+      #               withSpinner(plotOutput("missing_values", height = 983), type=7)
+      #             )
+      #       ),
+      #       
+      #       column(6,
+      #              
+      #             box(
+      #               title = span(icon("caret-right"), "Data Summary"),
+      #               status = "info",
+      #               solidHeader = F,
+      #               width = 12,
+      #               withSpinner(uiOutput("data_summary", height = 983), type=7)
+      #             )
+      #       )
+      # 
+      #     )
+      # ),
+    
+      ## ** data summary ---- 
       tabItem(
-          tabName = "dataset_glimpse",
+          tabName = "data-summary",
           
           fluidRow(
-            column(3, 
-                   
-                  box(
-                    title = span(icon("caret-right"), "Basic Description"),
-                    status = "info",
-                    solidHeader = F,
-                    width = 12,
-                    withSpinner(plotOutput("basic_description", height = 450), type=7)
-                  ),
-                  
-                  box(
-                    title = span(icon("caret-right"), "Data Types"),
-                    status = "info",
-                    solidHeader = F,
-                    width = 12,
-                    withSpinner(plotOutput("check_types", height = 450), type=7)
-                  )
-            ),
-
-            column(3,
-                  
+            
+            column(8, 
+                   offset = 2,
+            box(
+                title = span(icon("caret-right"), "Data Summary"),
+                status = "info",
+                solidHeader = F,
+                width = 12,
+                withSpinner(uiOutput("data_summary", height = 983), type=7)
+                )
+            )
+          )
+      ),
+    
+      ## ** missing-values ---- 
+      tabItem(
+          tabName = "missing-values",
+          
+          fluidRow(
+            
+                column(8, 
+                       offset = 2,
                   box(
                     title = span(icon("caret-right"), "Percentange of missing values"),
                     status = "info",
@@ -209,35 +288,28 @@ ui <- dashboardPage(
                     width = 12,
                     withSpinner(plotOutput("missing_values", height = 983), type=7)
                   )
-            ),
+                )
             
-            column(6,
-                   
-                  box(
-                    title = span(icon("caret-right"), "Funded Amount by Time"),
-                    status = "info",
-                    solidHeader = F,
-                    width = 12,
-                    withSpinner(uiOutput("data_summary", height = 983), type=7)
-                  )
-            )
-
           )
       ),
+    
        
-      ## ** numerical_distributions ---- 
+      ## ** numerical analysis ---- 
       tabItem(
-          tabName = "numerical_distributions",
+          tabName = "numerical_analysis",
 
             
             fluidRow(
 
             tabBox(
+             title = tagList(shiny::icon("gear"), "Click on tabs for different visualizations"),
              id = "tabset1",
-             width = 10,
-             tabPanel("Histograms",withSpinner(plotOutput("numerical_histograms", height = 983), type=7)),
+             side="right",
+             width = 12,
+             selected = "Histograms",
+             tabPanel("QQ-plots",withSpinner(plotOutput("qqplots", height = 983), type=7)),
              tabPanel("Densities",withSpinner(plotOutput("densities", height = 983), type=7)),
-             tabPanel("QQ-plots",withSpinner(plotOutput("qq-plots", height = 983), type=7))
+             tabPanel("Histograms",withSpinner(plotOutput("numerical_histograms", height = 983), type=7))
             )
           )
 
@@ -245,16 +317,20 @@ ui <- dashboardPage(
       
       ## ** categorical_distributions ----
       tabItem(
-          tabName = "categorical_distribution",
+          tabName = "categorical_analysis",
           
-          # fluidRow(
-          #     
-          #   tabBox(
-          #    id = "tabset2",
-          #    width = 10,
-          #    tabPanel("Frequencies",withSpinner(plotOutput("frequencies", height = 983), type=7))
-          #   )
-          # )
+         fluidRow(
+
+            tabBox(
+             title = tagList(shiny::icon("gear"), "Click on tabs for different visualizations"),
+             id = "tabset2",
+             side="right",
+             width = 12,
+             selected = "Frequencies",
+             tabPanel("Pie-charts",withSpinner(highchartOutput("pie"), type=7)),
+             tabPanel("Frequencies",withSpinner(plotOutput("frequencies", height = 1200), type=7))
+            )
+          )
 
       ),
         
@@ -262,16 +338,16 @@ ui <- dashboardPage(
       tabItem(
           tabName = "correlations",
           
-          #  fluidRow(
-          #     
-          #   box(
-          #    title = span(icon("caret-right"), "Correlations"),
-          #    status = "info",
-          #    solidHeader = F,
-          #    width = 12,
-          #    withSpinner(plotOutput("corr", height = 983), type=7)
-          #   )
-          # )
+           fluidRow(
+
+            box(
+             title = span(icon("caret-right"), "Correlations"),
+             status = "info",
+             solidHeader = F,
+             width = 12,
+             withSpinner(plotOutput("corr", height = 983), type=7)
+            )
+          )
       ),
        
       ## ** outliers ----        

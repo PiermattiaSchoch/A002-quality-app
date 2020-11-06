@@ -124,7 +124,7 @@ customTheme <- shinyDashboardThemeDIY(
   ,tabBoxTabTextColor = "rgb(0,0,0)"
   ,tabBoxTabTextColorSelected = "rgb(0,0,0)"
   ,tabBoxBackColor = "rgb(255,255,255)"
-  ,tabBoxHighlightColor = "rgba(44,222,235,1)"
+  ,tabBoxHighlightColor = "#182848"
   ,tabBoxBorderRadius = 5
 
   ### inputs

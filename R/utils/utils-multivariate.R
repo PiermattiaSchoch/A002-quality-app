@@ -40,3 +40,30 @@ plot_missing_mycolor = function (data,
         }
 
 
+## Plot a series of histograms ----
+
+library(gridExtra)
+library(ggcorrplot)
+
+green = "#018F83"
+positano = "#DE9F06"
+darkblu = "#334357"
+
+plot_series_hist <- function(df, xvar){
+    
+     df$title = toupper(xvar)
+    
+     p = ggplot(df, aes_string(x=xvar)) +
+        geom_histogram(bins=30, color=positano, fill=green) +
+          theme_tq() +
+          scale_color_tq() +
+          facet_wrap(~title)+
+          labs(title="", x="", y="") +
+          theme(axis.text = element_text(family="Courier", colour=darkblu, size=12, face="bold"),
+                strip.text.x = element_text(size = 14, colour = "white", angle = 0),
+                strip.background =element_rect(fill=green))
+     
+     print(p)
+}
+
+
