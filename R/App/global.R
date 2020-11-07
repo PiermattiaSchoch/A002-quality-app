@@ -1,7 +1,35 @@
-source(here::here("R", "libs.R"))
+#source(here::here("R", "libs.R"))
 
 # Load dataset
-df = readRDS(here::here("data","dataset.rds"))
+#df = readRDS(here::here("data","dataset.rds"))
+
+library(here)
+library(styler)
+library(devtools)
+
+# Data manipulation 
+library(dplyr)
+library(tidyverse)
+
+# Data visualization 
+library(ggplot2)
+library(highcharter)
+
+# Shiny
+library(shiny)
+library(shinydashboard)
+library(shinyWidgets)
+library(dashboardthemes)
+library(shinydashboardPlus)
+library(shinycssloaders)
+library(shinyWidgets)
+library(shinyjs)
+library(reactable)
+
+
+library(htmltools)
+
+
 
 # 
 # theData = df
