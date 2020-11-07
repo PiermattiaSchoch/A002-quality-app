@@ -13,7 +13,7 @@ library(tidyverse)
 
 # Data visualization 
 library(ggplot2)
-library(highcharter)
+#library(highcharter)
 
 # Shiny
 library(shiny)
