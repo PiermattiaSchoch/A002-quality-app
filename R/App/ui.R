@@ -44,27 +44,35 @@ ui <- dashboardPage(
                 ),
                
                menuSubItem(
-                  text = "Numerical analysis",
-                  tabName = "numerical_analysis",
+                  text = "Numerical",
+                  tabName = "numerical",
                   icon = icon("angle-right")
                 ),
                 menuSubItem(
-                  text = "Categorical analysis",
-                  tabName = "categorical_analysis",
+                  text = "Categorical",
+                  tabName = "categorical",
                   icon = icon("angle-right")
                 ),
                 menuSubItem(
                   text = "Correlations",
                   tabName = "correlations",
                   icon = icon("angle-right")
-                ),
-                menuSubItem(
-                  text = "Outliers",
-                  tabName = "outliers",
-                  icon = icon("angle-right")
                 )
       ),
-      menuItem("Univariate Analysis", tabName = "univariate_analysis", icon = icon("poll")),
+      menuItem("Univariate Analysis", tabName = "univariate_analysis", icon = icon("poll"), startExpanded = TRUE,
+                  
+               menuSubItem(
+                  text = "Numerical variables",
+                  tabName = "numerical_variables",
+                  icon = icon("angle-right")
+                ),
+               
+                menuSubItem(
+                  text = "Categorical variables",
+                  tabName = "categorical_variables",
+                  icon = icon("angle-right")
+                )
+               ),
       menuItem("Quality Cheker", tabName = "quality_checker", icon = icon("check-circle"))
     )
   ),
@@ -296,7 +304,7 @@ ui <- dashboardPage(
        
       ## ** numerical analysis ---- 
       tabItem(
-          tabName = "numerical_analysis",
+          tabName = "numerical",
 
             
             fluidRow(
@@ -307,6 +315,8 @@ ui <- dashboardPage(
              side="right",
              width = 12,
              selected = "Histograms",
+             tabPanel("Outliers (Mean Absolute Deviation)",withSpinner(plotOutput("outliers_mad", height = 983), type=7)),
+             tabPanel("Outliers (Z-score)",withSpinner(plotOutput("outliers_zscore", height = 983), type=7)),
              tabPanel("QQ-plots",withSpinner(plotOutput("qqplots", height = 983), type=7)),
              tabPanel("Densities",withSpinner(plotOutput("densities", height = 983), type=7)),
              tabPanel("Histograms",withSpinner(plotOutput("numerical_histograms", height = 983), type=7))
@@ -317,7 +327,7 @@ ui <- dashboardPage(
       
       ## ** categorical_distributions ----
       tabItem(
-          tabName = "categorical_analysis",
+          tabName = "categorical",
           
          fluidRow(
 
@@ -368,7 +378,7 @@ ui <- dashboardPage(
        
       ## ** univariate_analysis ----  
       tabItem(
-          tabName = "univariate_analysis",
+          tabName = "numerical_variables",
          
           fluidRow(
             column(2, 
@@ -378,7 +388,7 @@ ui <- dashboardPage(
               status = "info",
               solidHeader = F,
               width = 12,
-              selectInput("univariate", span(icon("caret-right"), "Pick a variable"), ""),
+              selectInput("univariate_num", span(icon("caret-right"), "Pick a variable"), ""),
             )
             ),
             column(5,
@@ -406,8 +416,46 @@ ui <- dashboardPage(
           
             )
           ), 
+    
+        tabItem(
+          tabName = "categorical_variables",
+         
+          fluidRow(
+            column(2,
 
-  
+            box(
+              title = "",
+              status = "info",
+              solidHeader = F,
+              width = 12,
+              selectInput("univariate_cat", span(icon("caret-right"), "Pick a variable"), ""),
+            )
+            ),
+            
+            column(5,
+
+            box(
+              title = "",
+              status = "info",
+              solidHeader = F,
+              width = 12,
+              withSpinner(highchartOutput("freq"), type=7)
+            )
+            ),
+
+            column(5,
+
+            box(
+              title = "",
+              status = "info",
+              solidHeader = F,
+              width = 12,
+              withSpinner(highchartOutput("pie_hc"), type=7)
+            )
+            )
+            )
+          ),
+
       ## ** quality_checker ----
       tabItem(
           tabName = "quality_checker",

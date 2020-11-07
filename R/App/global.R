@@ -2,42 +2,19 @@ source(here::here("R", "libs.R"))
 
 # Load dataset
 df = readRDS(here::here("data","dataset.rds"))
-data = df
-    fact <- unlist(lapply(data, is.character))
-    data = data[ , fact]
 
-    blue_start = "#182848"
-    blue_end = "#4b6cb7"
-
-    list = NULL
-    for(name in names(data)){
-
-      data$title = rep(toupper(name), times=nrow(data))
-
-      temp = data %>%
-              select(all_of(name)) %>%
-              pull()
-
-      data_temp = data %>%
-                  group_by(temp, .groups = 'drop') %>%
-                  mutate(count = n()) %>%
-                  select(temp, count, title) %>%
-                  distinct(temp, .keep_all = T) %>%
-                  ungroup() %>%
-                  slice(1:8)
-
-      hc <- data_temp %>%
-              hchart(
-              "pie", hcaes(x = temp, y = count),
-               name = name
-            )
-
-
-      list[[name]] = hc
-
-    }
-
-   hw_grid(list, rowheight = 500)
+# 
+# theData = df
+# theData_df = data.frame(theData)
+# aggregate = as.data.frame(theData_df %>% 
+#                               group_by_at(names(theData_df)[2], .groups = 'drop') %>%
+#                               mutate(count = n())  %>%
+#                               select(all_of(names(theData_df)[2]), count) %>%
+#                               distinct_at(vars(names(theData_df)[2]), .keep_all = T) %>%
+#                               ungroup() %>%
+#                               slice(1:8))
+# 
+#  hc_fun2(aggregate, "job", names(aggregate)[2], type="pie")
 
 
 # Import utils

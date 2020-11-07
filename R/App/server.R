@@ -53,17 +53,8 @@ server <- function(input, output, session) {
     
   })
   
-  observe({
-    inFile<-input$file1
-    print(inFile)
-    if(is.null(inFile))
-      return(NULL)
-    dt = read.csv(inFile$datapath, header=input$header, sep=input$sep)
-    ## Decide later what to do with the data, here we just fill
-    updateSelectInput(session, "univariate", choices = names(dt))
-  })
-
   
+ 
   output$Dataframe <- renderValueBox({
     
     valueBox(
@@ -225,39 +216,7 @@ server <- function(input, output, session) {
     
   })
   
-    output$densities = renderPlot({
-  
-    data = dataset()
-    nums <- unlist(lapply(data, is.numeric))  
-    data = data[ , nums]
-    
-    blue_start = "#182848"
-    blue_end = "#4b6cb7"
-    
-    list = NULL
-    for(name in names(data)){
-      
-      data$title = rep(toupper(name), times=nrow(data))
-      
-      p = ggplot(data, aes_string(x=name)) +
-          geom_density(position = "identity", color=blue_end, fill=blue_start) +
-            theme_tq() +
-            scale_color_tq() +
-            facet_wrap(~title)+
-            labs(title="", x="", y="") +
-            theme(axis.text = element_text(family="Courier", colour=darkblu, size=12, face="bold"),
-                  strip.text.x = element_text(size = 14, colour = "white", angle = 0),
-                  strip.background =element_rect(fill=darkblu))
-  
-  
-      list[[name]] = p
-    
-    }
-    
-    grid.arrange(grobs=list)
-    
-  })
-    
+   
   output$qqplots = renderPlot({
   
     data = dataset()
@@ -293,6 +252,58 @@ server <- function(input, output, session) {
     
   })
   
+   output$outliers_mad = renderPlot({
+  
+     # take reactive dataset
+     data = dataset()
+     
+     # take a data frame with outliers according to MAD function 
+     outliers_logical = data %>% transmute_if(is.numeric, isnt_out_mad)
+
+     # bind the two data frames data
+     data = as.data.frame(cbind(data %>% select_if(is.numeric), outliers_logical))
+     data = data[,order(names(data))]
+      
+     # build a list 
+     data_list = lapply(seq(1, ncol(data), by=2), function(i) data[i: pmin((i+1), ncol(data))])
+     # add a title 
+     data_list = lapply(data_list, function(x) cbind(x, title = toupper(colnames(x)[1])))
+     
+     # produce a plot list 
+     plot_list = lapply(data_list, plot_series_outliers)
+     
+     # arrange in a grid layout
+     grid.arrange(grobs=plot_list)
+    
+  })
+  
+
+  output$outliers_zscore = renderPlot({
+  
+     # take reactive dataset
+     data = dataset()
+     
+     # take a data frame with outliers according to MAD function 
+     outliers_logical = data %>% transmute_if(is.numeric, isnt_out_z)
+
+     # bind the two data frames data
+     data = as.data.frame(cbind(data %>% select_if(is.numeric), outliers_logical))
+     data = data[,order(names(data))]
+      
+     # build a list 
+     data_list = lapply(seq(1, ncol(data), by=2), function(i) data[i: pmin((i+1), ncol(data))])
+     # add a title 
+     data_list = lapply(data_list, function(x) cbind(x, title = toupper(colnames(x)[1])))
+     
+     # produce a plot list 
+     plot_list = lapply(data_list, plot_series_outliers)
+     
+     # arrange in a grid layout
+     grid.arrange(grobs=plot_list)
+    
+  }) 
+   
+     
   ## ** categorical analysis ----
   
   output$frequencies = renderPlot({
@@ -319,6 +330,7 @@ server <- function(input, output, session) {
                   select(temp, count, title) %>% 
                   distinct(temp, .keep_all = T) %>% 
                   ungroup() %>% 
+                  arrange(desc(count)) %>% 
                   slice(1:8)
                 
       p = data_temp %>% 
@@ -350,44 +362,44 @@ server <- function(input, output, session) {
   })
   
 
-  output$pie = renderHighchart({
-  
-    data = dataset()
-    fact <- unlist(lapply(data, is.character))  
-    data = data[ , fact]
-    
-    blue_start = "#182848"
-    blue_end = "#4b6cb7"
-    
-    list = NULL
-    for(name in names(data)){
-      
-      temp = data %>%
-              select(all_of(name)) %>% 
-              pull()
-
-      data_temp = data %>% 
-                  group_by(temp, .groups = 'drop') %>%
-                  mutate(count = n()) %>% 
-                  select(temp, count) %>% 
-                  distinct(temp, .keep_all = T) %>% 
-                  ungroup() %>% 
-                  slice(1:8)
-                
-      hc <- data_temp %>%
-              hchart(
-              "pie", hcaes(x = temp, y = count),
-               name = name
-            )
-        
-  
-      list[[name]] = hc
-    
-    }
-    
-   hw_grid(list, rowheight = 500, add_htmlgrid_css = F)
-
-  })
+  # output$pie = renderHighchart({
+  # 
+  #   data = dataset()
+  #   fact <- unlist(lapply(data, is.character))  
+  #   data = data[ , fact]
+  #   
+  #   blue_start = "#182848"
+  #   blue_end = "#4b6cb7"
+  #   
+  #   list = NULL
+  #   for(name in names(data)){
+  #     
+  #     temp = data %>%
+  #             select(all_of(name)) %>% 
+  #             pull()
+  # 
+  #     data_temp = data %>% 
+  #                 group_by(temp, .groups = 'drop') %>%
+  #                 mutate(count = n()) %>% 
+  #                 select(temp, count) %>% 
+  #                 distinct(temp, .keep_all = T) %>% 
+  #                 ungroup() %>% 
+  #                 slice(1:8)
+  #               
+  #     hc <- data_temp %>%
+  #             hchart(
+  #             "pie", hcaes(x = temp, y = count),
+  #              name = name
+  #           )
+  #       
+  # 
+  #     list[[name]] = hc
+  #   
+  #   }
+  #   
+  #  hw_grid(list, rowheight = 500, add_htmlgrid_css = F)
+  # 
+  # })
   
   
     ## ** correlations ----
@@ -401,21 +413,49 @@ server <- function(input, output, session) {
   
   # Plot
   ggcorrplot(corr, hc.order = TRUE,
-             type = "lower",
+             type = "upper",
              lab = TRUE,
-             lab_size = 3,
-             method="circle",
-             colors = c("#FB2E41", "white", "#304857"),
+             lab_size = 6,
+             method="square",
+             colors = c("#FB2E41", "white", "#182848"),
+             lab_col = "white",
              title="Correlogram of dataset",
-             ggtheme=theme_bw)
+             ggtheme=theme_bw) +
+             labs(title="")
 
     
     
   })
   
-  ## ** univariate analysis ----
   
-  dataset_univariate = reactive({
+  ## **  Observer to create a dataframe when users go to univariate section  ----
+  
+  observe({
+    inFile<-input$file1
+    print(inFile)
+    if(is.null(inFile))
+      return(NULL)
+    dt = read.csv(inFile$datapath, header=input$header, sep=input$sep)
+    dt = dt %>% select_if(is.numeric)
+    ## Decide later what to do with the data, here we just fill
+    updateSelectInput(session, "univariate_num", choices = names(dt))
+  })
+  
+    observe({
+    inFile<-input$file1
+    print(inFile)
+    if(is.null(inFile))
+      return(NULL)
+    dt = read.csv(inFile$datapath, header=input$header, sep=input$sep)
+    dt = dt %>% select_if(is.character)
+    ## Decide later what to do with the data, here we just fill
+    updateSelectInput(session, "univariate_cat", choices = names(dt))
+  })
+  
+  
+  ## ** numerical variables ----
+  
+  dataset_univariate_num = reactive({
     
     req(input$file1)
 
@@ -424,37 +464,83 @@ server <- function(input, output, session) {
              sep = input$sep,
              quote = input$quote)
     
-    df =  df[, input$univariate]
-    
+    df =  df[, input$univariate_num]
+
     return(df)
     
     
   })
     
-  
+
   output$hists = renderHighchart({
     
-  if(is.numeric(dataset_univariate())){
-   
     hc <- hchart(
-          dataset_univariate(), 
-          color = "#B71C1C", name = input$univariate
-  )
+          dataset_univariate_num(), 
+          color = "#B71C1C", name = input$univariate_num
+    )
     
-  }
   })  
   
   output$dens = renderHighchart({
     
-  if(is.numeric(dataset_univariate())){
-   
     hc <- hchart(
-          density(dataset_univariate()), 
-          color = "#B71C1C", name = input$univariate
-  )
+          density(dataset_univariate_num()), 
+          color = "#B71C1C", name = input$univariate_num
+    )
+
+  })
+  
+  ## ** categorical variables ----
+      
+  dataset_univariate_cat = reactive({
     
-  }
-  })  
+    req(input$file1)
+
+    df <- read.csv(input$file1$datapath,
+             header = input$header,
+             sep = input$sep,
+             quote = input$quote)
+    
+    df =  df[, input$univariate_cat]
+    df = sort(df)
+
+    return(df)
+    
+  })
+  
+  aggregate = reactive({
+
+    theData = dataset_univariate_cat()
+    theData_df = data.frame(dataset_univariate_cat())
+    aggr = as.data.frame(theData_df %>%
+                              group_by_at(names(theData_df)[1], .groups = 'drop') %>%
+                              mutate(count = n())  %>%
+                              select(all_of(names(theData_df)[1]), count) %>%
+                              distinct_at(vars(names(theData_df)[1]), .keep_all = T) %>%
+                              ungroup() %>%
+                              arrange(desc(count)) %>% 
+                              slice(1:8))
+    
+    #names(aggr)[1] = "inputvar"
+
+  })
+  
+  output$freq = renderHighchart({
+    
+    x = dataset_univariate_cat()
+    hchart(x, type = "column", name=input$univariate_cat)
+    
+  })
+  
+  
+
+  output$pie_hc = renderHighchart({
+
+
+    x = dataset_univariate_cat()
+    hchart(x, type = "pie", name=input$univariate_cat)
+
+  })
     
   
 }
