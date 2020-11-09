@@ -50,10 +50,10 @@ library(htmltools)
 #source(here::here("R","utils","utils-multivariate.R"))
 
 #devtools::install_github("laresbernardo/lares")
-library(lares)
+#library(lares)
 library(data.table)
 library(tidyquant)
-library(DataExplorer)
+#library(DataExplorer)
 library(visdat)
 library(summarytools)
 
